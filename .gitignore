@@ -1,0 +1,6 @@
+# Pristine upstream clone (see UPSTREAM.md) - cloned by scripts/apply-patches.sh
+/gpu-screen-recorder-official/
+
+# Build output produced by scripts/build.sh
+/build/
+/build-*/
