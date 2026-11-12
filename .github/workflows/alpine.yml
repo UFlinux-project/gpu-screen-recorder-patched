@@ -1,0 +1,56 @@
+name: Alpine build
+
+# Builds the patched gpu-screen-recorder on Alpine Linux for x86_64 and aarch64
+# (native runners, no emulation), smoke-tests the binaries and uploads them.
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: alpine-${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - gomod: amd64
+            arch: x86_64
+            runner: ubuntu-24.04
+          - gomod: arm64
+            arch: aarch64
+            runner: ubuntu-24.04-arm
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and test in alpine container
+        run: |
+          docker run --rm \
+            --platform linux/${{ matrix.gomod }} \
+            -v "$GITHUB_WORKSPACE:/src" \
+            -w /src \
+            docker.io/library/alpine:latest \
+            /bin/sh ci/alpine-build.sh
+
+      - name: Collect binaries
+        run: |
+          mkdir -p out
+          cp gpu-screen-recorder-official/build/gpu-screen-recorder \
+             gpu-screen-recorder-official/build/gsr-kms-server \
+             gpu-screen-recorder-official/build/gsr-cli \
+             out/
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-screen-recorder-alpine-${{ matrix.arch }}
+          path: |
+            out/gpu-screen-recorder
+            out/gsr-kms-server
+            out/gsr-cli
+          if-no-files-found: error

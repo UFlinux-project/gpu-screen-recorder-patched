@@ -47,6 +47,8 @@ gpu-screen-recorder-official/  pristine upstream checkout (see UPSTREAM.md for t
 scripts/apply-patches.sh       reset the tree and apply the series with git am
 scripts/make-patches.sh        regenerate patches/ from a working branch
 scripts/build.sh               apply the series and build with meson
+ci/alpine-build.sh             Alpine Linux build + smoke tests (used by CI)
+.github/workflows/alpine.yml   CI: Alpine binaries for x86_64 and aarch64
 ```
 
 ## Usage
@@ -72,3 +74,17 @@ Both features can be disabled at build time with `-Dv4l2_encoder=false` and
 * ffmpeg with the v4l2m2m encoders (any distro ffmpeg built with `--enable-v4l2-m2m`;
   Debian/Ubuntu and Fedora builds have it) — only needed for recording on v4l2-encoding boards.
 * libwebp — only needed for webp screenshots.
+
+## CI
+
+`.github/workflows/alpine.yml` builds the patched tree on Alpine Linux for x86_64 and
+aarch64 (native GitHub runners, inside an `alpine` container) with
+`ci/alpine-build.sh`, which clones upstream, applies the series, builds a release
+configuration, checks that no shared library is missing and runs the binaries
+(`--version`). The three binaries are uploaded as artifacts named
+`gpu-screen-recorder-alpine-x86_64` and `gpu-screen-recorder-alpine-aarch64`.
+The same script can be run locally:
+
+```sh
+docker run --rm -v "$PWD:/src" -w /src docker.io/library/alpine:latest /bin/sh ci/alpine-build.sh
+```

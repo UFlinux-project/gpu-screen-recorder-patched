@@ -1,4 +1,4 @@
-From fda01c4012bdf6f29f3807a3f512ad05fc28abd3 Mon Sep 17 00:00:00 2001
+From ee4ecd0f1422274deec4eed576ce0f0e11737f03 Mon Sep 17 00:00:00 2001
 From: panmourovaty <panmourovaty@centrum.cz>
 Date: Thu, 12 Nov 2026 09:51:13 +0100
 Subject: [PATCH 9/9] Docs: document v4l2 encoder and webp screenshots

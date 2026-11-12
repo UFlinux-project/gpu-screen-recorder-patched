@@ -1,4 +1,4 @@
-From 690cba32f2c5e264e6dee3fd39b6b3639a2dfdeb Mon Sep 17 00:00:00 2001
+From 5e0ac758ec0276dc7f6175dfe0cbf6266c5576f8 Mon Sep 17 00:00:00 2001
 From: panmourovaty <panmourovaty@centrum.cz>
 Date: Thu, 12 Nov 2026 09:48:58 +0100
 Subject: [PATCH 7/9] --info: report v4l2 mem2mem encoders

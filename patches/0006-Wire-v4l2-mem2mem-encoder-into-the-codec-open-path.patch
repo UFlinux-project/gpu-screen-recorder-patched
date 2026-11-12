@@ -1,4 +1,4 @@
-From 92b40d245b077b8b6112969620b0e02c5bbe09bc Mon Sep 17 00:00:00 2001
+From 718d1213b5921c9a9092e945fa85e1fe2d90ada2 Mon Sep 17 00:00:00 2001
 From: panmourovaty <panmourovaty@centrum.cz>
 Date: Thu, 12 Nov 2026 09:47:58 +0100
 Subject: [PATCH 6/9] Wire v4l2 mem2mem encoder into the codec open path

@@ -1,4 +1,4 @@
-From 735ba10c43fd4b3d27b19e076e5a342a46caa73d Mon Sep 17 00:00:00 2001
+From e76e3f7ff444226b1a3d1545a799e075cbc79b42 Mon Sep 17 00:00:00 2001
 From: panmourovaty <panmourovaty@centrum.cz>
 Date: Thu, 12 Nov 2026 09:50:09 +0100
 Subject: [PATCH 8/9] Add webp screenshot support

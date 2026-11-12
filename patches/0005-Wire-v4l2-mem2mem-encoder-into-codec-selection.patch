@@ -1,4 +1,4 @@
-From b36d5a233ed5cddf398e3f33ed984da7644a3622 Mon Sep 17 00:00:00 2001
+From 285dd4f775ee8f2d7bf0a125c4c1972f345a0b13 Mon Sep 17 00:00:00 2001
 From: panmourovaty <panmourovaty@centrum.cz>
 Date: Thu, 12 Nov 2026 09:45:04 +0100
 Subject: [PATCH 5/9] Wire v4l2 mem2mem encoder into codec selection
@@ -11,8 +11,8 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ---
  include/recorder/codec_select.h |   4 +-
  src/cli/commands.c              |   2 +-
- src/recorder/codec_select.c     | 138 ++++++++++++++++++++++++++++++--
- 3 files changed, 135 insertions(+), 9 deletions(-)
+ src/recorder/codec_select.c     | 154 +++++++++++++++++++++++++++++---
+ 3 files changed, 144 insertions(+), 16 deletions(-)
 
 diff --git a/include/recorder/codec_select.h b/include/recorder/codec_select.h
 index 0e6d230..c992f0d 100644
@@ -49,7 +49,7 @@ index b5d1736..e7f9210 100644
      const gsr_named_video_codec video_codecs[] = {
          { "h264",              &supported_video_codecs.h264 },
 diff --git a/src/recorder/codec_select.c b/src/recorder/codec_select.c
-index 4e36e39..9109020 100644
+index 4e36e39..2792a3f 100644
 --- a/src/recorder/codec_select.c
 +++ b/src/recorder/codec_select.c
 @@ -7,6 +7,10 @@
@@ -289,10 +289,17 @@ index 4e36e39..9109020 100644
          } else if(settings->video_encoder != GSR_VIDEO_ENCODER_HW_CPU) {
              const bool yuv444 = settings->pixel_format == GSR_PIXEL_FORMAT_YUV444;
              settings->video_codec = select_appropriate_video_codec_automatically(video_size, yuv444, &supported_video_codecs_non_vulkan);
-@@ -572,6 +678,24 @@ int select_video_codec_with_fallback(vec2i video_size, gsr_recorder_settings *se
+@@ -572,13 +678,33 @@ int select_video_codec_with_fallback(vec2i video_size, gsr_recorder_settings *se
              }
  
              if(settings->video_codec == (gsr_video_codec)-1) {
+-                if(settings->fallback_cpu_encoding) {
+-                    gsr_log(GSR_LOG_LEVEL_WARNING, "gpu encoding is not available on your system or your gpu doesn't support recording at the resolution you are trying to record, trying cpu encoding instead because -fallback-cpu-encoding is enabled. Install the proper vaapi drivers on your system (if supported) if you experience performance issues");
+-                    force_cpu_encoding(settings);
+-                } else {
+-                    gsr_log(GSR_LOG_LEVEL_ERROR, "no video encoder was specified and neither h264, hevc nor av1 are supported on your system or you are trying to capture at a resolution higher than your system supports for each codec.\n"
+-                        "  Ensure that you have installed the proper vaapi driver. If your gpu doesn't support video encoding then you can run gpu-screen-recorder with \"-fallback-cpu-encoding yes\" option to use cpu encoding.");
+-                    return GSR_ERROR_NO_VIDEO_CODEC_AVAILABLE;
 +#ifdef GSR_V4L2_ENCODER
 +                // No GPU encoder available. If a v4l2 mem2mem encoder exists (raspberry pi, radxa, rockchip, ...) then use it.
 +                gsr_supported_video_codecs v4l2_video_codecs;
@@ -311,9 +318,18 @@ index 4e36e39..9109020 100644
 +                }
 +                if(settings->video_codec == (gsr_video_codec)-1)
 +#endif
-                 if(settings->fallback_cpu_encoding) {
-                     gsr_log(GSR_LOG_LEVEL_WARNING, "gpu encoding is not available on your system or your gpu doesn't support recording at the resolution you are trying to record, trying cpu encoding instead because -fallback-cpu-encoding is enabled. Install the proper vaapi drivers on your system (if supported) if you experience performance issues");
-                     force_cpu_encoding(settings);
++                {
++                    if(settings->fallback_cpu_encoding) {
++                        gsr_log(GSR_LOG_LEVEL_WARNING, "gpu encoding is not available on your system or your gpu doesn't support recording at the resolution you are trying to record, trying cpu encoding instead because -fallback-cpu-encoding is enabled. Install the proper vaapi drivers on your system (if supported) if you experience performance issues");
++                        force_cpu_encoding(settings);
++                    } else {
++                        gsr_log(GSR_LOG_LEVEL_ERROR, "no video encoder was specified and neither h264, hevc nor av1 are supported on your system or you are trying to capture at a resolution higher than your system supports for each codec.\n"
++                            "  Ensure that you have installed the proper vaapi driver. If your gpu doesn't support video encoding then you can run gpu-screen-recorder with \"-fallback-cpu-encoding yes\" option to use cpu encoding.");
++                        return GSR_ERROR_NO_VIDEO_CODEC_AVAILABLE;
++                    }
+                 }
+             }
+         }
 -- 
 2.56.0
 
