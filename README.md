@@ -80,9 +80,10 @@ Both features can be disabled at build time with `-Dv4l2_encoder=false` and
 `.github/workflows/alpine.yml` builds the patched tree on Alpine Linux for x86_64 and
 aarch64 (native GitHub runners, inside an `alpine` container) with
 `ci/alpine-build.sh`, which clones upstream, applies the series, builds a release
-configuration, checks that no shared library is missing and runs the binaries
-(`--version`). The three binaries are uploaded as artifacts named
-`gpu-screen-recorder-alpine-x86_64` and `gpu-screen-recorder-alpine-aarch64`.
+configuration with LTO (`--buildtype=release -Db_lto=true`), checks that no shared
+library is missing and runs the binaries (`--version`). The three binaries are
+uploaded as artifacts named `gpu-screen-recorder-alpine-x86_64` and
+`gpu-screen-recorder-alpine-aarch64`.
 The same script can be run locally:
 
 ```sh

@@ -40,7 +40,7 @@ echo "==> Applying patch series"
 
 echo "==> Building"
 cd gpu-screen-recorder-official
-meson setup build --buildtype=release
+meson setup build --buildtype=release -Db_lto=true
 ninja -C build
 
 echo "==> Checking shared library dependencies"
